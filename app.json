@@ -1,0 +1,17 @@
+{
+  "name": "marshmallow dashboard",
+  "repository": "https://github.com/sloria/dashboard",
+  "env": {
+    "GOOGLE_PRIVATE_KEY": { "required": true },
+    "GOOGLE_PRIVATE_KEY_ID": { "required": true },
+    "GOOGLE_PROJECT_ID": { "required": true },
+    "GOOGLE_CLIENT_EMAIL": { "required": true },
+    "GOOGLE_TOKEN_URI": { "required": false },
+    "REDIS_URL": { "required": true },
+    "CACHE_TIMEOUT": { "required": false },
+    "CACHE_GRAPHS": { "required": false },
+    "LOG_LEVEL": { "required": false }
+  },
+
+  "buildpacks": [{ "url": "heroku/python" }]
+}

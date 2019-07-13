@@ -1,0 +1,35 @@
+body {
+  font-family: monaco, consolas, menlo, monospace;
+  font-size: 10px;
+  line-height: 1.4;
+
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 10px;
+
+  color: #363636;
+
+  text-rendering: optimizeLegibility;
+}
+
+h1 {
+  font-size: 3.6em;
+}
+
+h2 {
+  margin-top: 1.8em;
+  font-size: 2em;
+  font-weight: normal;
+}
+
+p {
+  font-size: 1.2em;
+}
+
+label {
+  font-size: 1.4em;
+}
+
+._dash-loading {
+  font-size: 2em;
+}
