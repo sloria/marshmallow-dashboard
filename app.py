@@ -158,7 +158,7 @@ def layout():
         children=[
             html.H1("marshmallow dashboard"),
             html.P(
-                "Data were collected from PyPI's BigQuery dataset. Excludes downloads from mirrors and Linux platforms (to correct for CI downloads)."
+                "Data are collected daily from PyPI's BigQuery dataset. Excludes downloads from mirrors and Linux platforms (to correct for CI downloads)."
             ),
             ma2_vs_ma3,
             ma2_vs_ma3_by_week,
