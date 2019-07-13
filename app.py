@@ -178,7 +178,7 @@ FONT = {"family": "monaco, consolas, menlo, monospace", "color": "#363636"}
 
 def maybe_cache_graph(func):
     if CACHE_GRAPHS:
-        app.logger.debug("caching graph")
+        app.logger.debug(f"caching graph callback: {func}")
         return cache.memoize()(func)
     return func
 
@@ -371,7 +371,7 @@ def update_ma2_vs_ma3_pyminor(value):
     ma3 = data[data.category_value.str.contains("marshmallow3")]
     ma3_versions = sorted(ma3.category_value.unique())
     ma3_labels = [version.split("-")[0].lstrip("py") for version in ma3_versions]
-    ma3_colors = [PYTHON_COLORS.get(label, "#6991b4") for label in ma3_labels]
+    ma3_colors = [PYTHON_COLORS.get(label, "#fff3bc") for label in ma3_labels]
     ma3_values = [
         ma3[ma3.category_value == version].downloads.sum() for version in ma3_versions
     ]
