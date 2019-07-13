@@ -76,7 +76,7 @@ WHERE
 def get_data():
     if USE_STATIC_DATA:
         app.logger.debug("using static data")
-        return pd.read_csv("july.csv")
+        return pd.read_csv("june-july.csv")
     app.logger.info("fetching data")
     client = get_client()
     result = client.query(query)
