@@ -6,10 +6,11 @@ import dash_html_components as html
 import environs
 import pandas as pd
 import plotly.graph_objs as go
+from dash.dependencies import Input
+from dash.dependencies import Output
 from flask_caching import Cache
-from google.cloud import bigquery
-from dash.dependencies import Input, Output
 from google.auth.crypt._python_rsa import RSASigner
+from google.cloud import bigquery
 from google.oauth2.service_account import Credentials
 
 # -----------------------------------------------------------------------------
@@ -59,8 +60,6 @@ def get_client():
     )
     return bigquery.Client(project=PROJECT_ID, credentials=credentials)
 
-
-# -----------------------------------------------------------------------------
 
 query = """
 SELECT *
@@ -183,14 +182,6 @@ def maybe_cache_graph(func):
     return func
 
 
-def downloads_by_week(df, date_key="date", downloads_key="downloads"):
-    df_copy = df.loc[:, [downloads_key]]
-    df_copy["week"] = pd.to_datetime(df[date_key]) - pd.to_timedelta(7, unit="d")
-    grouped = df_copy.groupby([pd.Grouper(key="week", freq="W-MON")])[downloads_key]
-    # exclude current week
-    return grouped.sum().reset_index().sort_values("week")[:-1]
-
-
 @app.callback(
     Output("ma2-vs-ma3", "figure"),
     [
@@ -236,6 +227,14 @@ def update_ma2_vs_ma3(percentages, include_linux):
             xaxis=dict(title=x_title, tickformat=tickformat),
         ),
     )
+
+
+def downloads_by_week(df, date_key="date", downloads_key="downloads"):
+    df_copy = df.loc[:, [downloads_key]]
+    df_copy["week"] = pd.to_datetime(df[date_key]) - pd.to_timedelta(7, unit="d")
+    grouped = df_copy.groupby([pd.Grouper(key="week", freq="W-MON")])[downloads_key]
+    # exclude current week
+    return grouped.sum().reset_index().sort_values("week")[:-1]
 
 
 @app.callback(
