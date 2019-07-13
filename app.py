@@ -267,20 +267,9 @@ def update_ma2_vs_ma3_by_week(percentages, include_linux):
         )
         totals = joined.downloads_ma2 + joined.downloads_ma3
 
-        x = joined.week.to_list()
-
-        ma2_trace = go.Bar(
-            x=x,
-            y=joined.downloads_ma2 / totals,
-            name="ma2",
-            marker=dict(color=MA_COLORS["2.x"]),
-        )
-        ma3_trace = go.Bar(
-            x=joined.week.to_list(),
-            y=joined.downloads_ma3 / totals,
-            name="ma3",
-            marker=dict(color=MA_COLORS["3.x"]),
-        )
+        ma2_x = ma3_x = joined.week.to_list()
+        ma2_y = joined.downloads_ma2 / totals
+        ma3_y = joined.downloads_ma3 / totals
 
         barmode = "stack"
         y_title = "percentage"
@@ -288,22 +277,18 @@ def update_ma2_vs_ma3_by_week(percentages, include_linux):
     else:
         ma2_x = ma2_by_week.week.to_list()
         ma2_y = ma2_by_week.downloads.to_list()
-        ma2_trace = go.Bar(
-            x=ma2_x, y=ma2_y, name="ma2", marker=dict(color=MA_COLORS["2.x"])
-        )
-
         ma3_x = ma3_by_week.week.to_list()
         ma3_y = ma3_by_week.downloads.to_list()
-        ma3_trace = go.Bar(
-            x=ma3_x, y=ma3_y, name="ma3", marker=dict(color=MA_COLORS["3.x"])
-        )
-
         tickformat = ",d"
         barmode = "group"
         y_title = "downloads"
 
+    data = [
+        go.Bar(x=ma2_x, y=ma2_y, name="ma2", marker=dict(color=MA_COLORS["2.x"])),
+        go.Bar(x=ma3_x, y=ma3_y, name="ma3", marker=dict(color=MA_COLORS["3.x"])),
+    ]
     return go.Figure(
-        data=[ma2_trace, ma3_trace],
+        data=data,
         layout=go.Layout(
             font=FONT,
             barmode=barmode,
