@@ -1,0 +1,17 @@
+version: '3'
+services:
+  web:
+    build: .
+    depends_on:
+      - redis
+    ports:
+      - "8050:8050"
+    volumes:
+      - .:/code
+    environment:
+      DASH_RUN_HOST: 0.0.0.0
+      REDIS_URL: redis://redis:6379
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379

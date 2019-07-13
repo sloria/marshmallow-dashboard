@@ -17,6 +17,7 @@ from google.oauth2.service_account import Credentials
 env = environs.Env()
 env.read_env(recurse=False)
 
+HOST = env.str("DASH_RUN_HOST", "127.0.0.1")
 PRIVATE_KEY = env.str("GOOGLE_PRIVATE_KEY", required=True)
 PRIVATE_KEY_ID = env.str("GOOGLE_PRIVATE_KEY_ID", required=True)
 PROJECT_ID = env.str("GOOGLE_PROJECT_ID", required=True)
@@ -431,4 +432,4 @@ def update_ma2_vs_ma3_pyminor(value):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(host=HOST, debug=True)
