@@ -1,5 +1,4 @@
 import datetime as dt
-import logging
 
 import dash
 import dash_core_components as dcc
@@ -29,13 +28,13 @@ TOKEN_URI = env.str("GOOGLE_TOKEN_URI", "https://oauth2.googleapis.com/token")
 CACHE_TIMEOUT = env.int("CACHE_TIMEOUT", 3600)
 USE_STATIC_DATA = env.bool("USE_STATIC_DATA", False)
 CACHE_GRAPHS = env.bool("CACHE_GRAPHS", False)
-LOG_LEVEL = env.str("LOG_LEVEL", "INFO")
+LOG_LEVEL = env.log_level("LOG_LEVEL", "INFO")
 
 
 # -----------------------------------------------------------------------------
 
 app = dash.Dash(__name__)
-app.logger.setLevel(getattr(logging, LOG_LEVEL))
+app.logger.setLevel(LOG_LEVEL)
 server = app.server
 cache = Cache(
     server,
