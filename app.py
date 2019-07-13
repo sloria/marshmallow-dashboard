@@ -208,16 +208,16 @@ def update_ma2_vs_ma3(percentages, include_linux):
         total = ma2_downloads + ma3_downloads
         ma2_percent = ma2_downloads / total
         ma3_percent = ma3_downloads / total
-        x = [ma2_percent, ma3_percent]
+        x = [ma3_percent, ma2_percent]
         x_title = "percentage"
         tickformat = "%"
     else:
-        x = [ma2_downloads, ma3_downloads]
+        x = [ma3_downloads, ma2_downloads]
         x_title = "downloads"
         tickformat = ",d"
 
-    y = ["ma2", "ma3"]
-    colors = [MA_COLORS["2.x"], MA_COLORS["3.x"]]
+    y = ["ma3", "ma2"]
+    colors = [MA_COLORS["3.x"], MA_COLORS["2.x"]]
 
     return go.Figure(
         data=[go.Bar(x=x, y=y, marker=dict(color=colors), orientation="h")],
