@@ -156,8 +156,10 @@ def layout():
     return html.Div(
         children=[
             html.H1("marshmallow dashboard"),
-            html.P(
-                "Data are collected daily from PyPI's BigQuery dataset. Excludes downloads from mirrors and Linux platforms (to correct for CI downloads)."
+            dcc.Markdown(
+                "Data are collected daily from PyPI's BigQuery dataset. "
+                "Excludes downloads from mirrors and Linux platforms "
+                "(to correct for CI downloads). Want the source code? It's [here](https://github.com/sloria/marshmallow-dashboard)."
             ),
             ma2_vs_ma3,
             ma2_vs_ma3_by_week,

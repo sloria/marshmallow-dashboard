@@ -26,6 +26,15 @@ p {
   font-size: 1.2em;
 }
 
+a {
+  color: #0076d1;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 .Select,
 label {
   font-size: 1.4em;
