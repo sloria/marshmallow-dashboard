@@ -1,3 +1,4 @@
+import datetime as dt
 import logging
 
 import dash
@@ -76,7 +77,7 @@ WHERE
 def get_data():
     if USE_STATIC_DATA:
         app.logger.debug("using static data")
-        return pd.read_csv("june-july.csv")
+        return pd.read_csv("june-july.csv", parse_dates=["date"])
     app.logger.info("fetching data")
     client = get_client()
     result = client.query(query)
@@ -100,10 +101,23 @@ def PercentageCheckbox(id):
     )
 
 
+def TimePeriodDropdown(id):
+    return dcc.Dropdown(
+        id=id,
+        options=[
+            {"label": "Past 7 days", "value": 7},
+            {"label": "Past 14 days", "value": 14},
+            {"label": "Past 30 days", "value": 30},
+        ],
+        value=7,
+    )
+
+
 ma2_vs_ma3 = html.Div(
     [
-        html.H2("marshmallow 2 vs. 3 (past 30 days)"),
+        html.H2("marshmallow 2 vs. 3"),
         dcc.Graph(id="ma2-vs-ma3", style=dict(height=300)),
+        TimePeriodDropdown(id="ma2-vs-ma3--period"),
         PercentageCheckbox(id="ma2-vs-ma3--percentages"),
         LinuxCheckbox(id="ma2-vs-ma3--include-linux"),
     ]
@@ -111,7 +125,7 @@ ma2_vs_ma3 = html.Div(
 
 ma2_vs_ma3_by_week = html.Div(
     [
-        html.H2("marshmallow 2 vs. 3 by week (past 30 days)"),
+        html.H2("marshmallow 2 vs. 3 by week"),
         dcc.Graph(id="ma2-vs-ma3-by-week", style=dict(height=300)),
         PercentageCheckbox(id="ma2-vs-ma3-by-week--percentages"),
         LinuxCheckbox(id="ma2-vs-ma3-by-week--include-linux"),
@@ -120,8 +134,9 @@ ma2_vs_ma3_by_week = html.Div(
 
 ma_versions = html.Div(
     [
-        html.H2("most downloaded versions (past 30 days)"),
+        html.H2("most downloaded versions"),
         dcc.Graph(id="ma-versions", style=dict(height=350)),
+        TimePeriodDropdown(id="ma-versions--period"),
         PercentageCheckbox(id="ma-versions--percentages"),
         LinuxCheckbox(id="ma-versions--include-linux"),
     ]
@@ -129,8 +144,9 @@ ma_versions = html.Div(
 
 ma2_vs_ma3_python_minor = html.Div(
     [
-        html.H2("marshmallow 2 vs. 3 by Python version (past 30 days)"),
+        html.H2("marshmallow 2 vs. 3 by Python version"),
         dcc.Graph(id="ma2-vs-ma3-pyminor", style=dict(height=300)),
+        TimePeriodDropdown(id="ma2-vs-ma3-pyminor--period"),
         LinuxCheckbox(id="ma2-vs-ma3-pyminor--include-linux"),
     ]
 )
@@ -182,15 +198,21 @@ def maybe_cache_graph(func):
     return func
 
 
+def filter_by_period(df, after):
+    after_date = dt.date.today() - dt.timedelta(days=after or 7)
+    return df[df.date >= after_date]
+
+
 @app.callback(
     Output("ma2-vs-ma3", "figure"),
     [
+        Input("ma2-vs-ma3--period", "value"),
         Input("ma2-vs-ma3--percentages", "value"),
         Input("ma2-vs-ma3--include-linux", "value"),
     ],
 )
 @maybe_cache_graph
-def update_ma2_vs_ma3(percentages, include_linux):
+def update_ma2_vs_ma3(period, percentages, include_linux):
     app.logger.debug("update_ma2_vs_ma3 callback")
     df = get_data()
     majors = df[df.category_label == "marshmallow_major"]
@@ -198,6 +220,8 @@ def update_ma2_vs_ma3(percentages, include_linux):
         ma2_category, ma3_category = "2", "3"
     else:
         ma2_category, ma3_category = "2-no_linux", "3-no_linux"
+
+    majors = filter_by_period(majors, period)
 
     ma2 = majors[majors.category_value == ma2_category]
     ma2_downloads = ma2.downloads.sum()
@@ -291,7 +315,7 @@ def update_ma2_vs_ma3_by_week(percentages, include_linux):
         layout=go.Layout(
             font=FONT,
             barmode=barmode,
-            margin=go.layout.Margin(t=30),
+            margin=go.layout.Margin(t=30, b=50),
             yaxis=dict(title=y_title, tickformat=tickformat),
             xaxis=dict(title="week"),
         ),
@@ -301,12 +325,13 @@ def update_ma2_vs_ma3_by_week(percentages, include_linux):
 @app.callback(
     Output("ma-versions", "figure"),
     [
+        Input("ma-versions--period", "value"),
         Input("ma-versions--percentages", "value"),
         Input("ma-versions--include-linux", "value"),
     ],
 )
 @maybe_cache_graph
-def update_ma_versions(percentages, include_linux):
+def update_ma_versions(period, percentages, include_linux):
     app.logger.debug("update_ma_versions callback")
     df = get_data()
     ma_versions = df[df.category_label == "marshmallow_version"]
@@ -314,6 +339,8 @@ def update_ma_versions(percentages, include_linux):
         data = ma_versions[~ma_versions.category_value.str.endswith("no_linux")]
     else:
         data = ma_versions[ma_versions.category_value.str.endswith("no_linux")]
+
+    data = filter_by_period(data, period)
 
     totals = (
         data.groupby(["category_value"])["downloads"].sum().sort_values(ascending=False)
@@ -340,24 +367,29 @@ def update_ma_versions(percentages, include_linux):
         layout=go.Layout(
             font=FONT,
             xaxis=dict(title=x_title, tickformat=tickformat),
-            margin=go.layout.Margin(t=5, b=50),
+            margin=go.layout.Margin(t=5, b=60),
         ),
     )
 
 
 @app.callback(
     Output("ma2-vs-ma3-pyminor", "figure"),
-    [Input("ma2-vs-ma3-pyminor--include-linux", "value")],
+    [
+        Input("ma2-vs-ma3-pyminor--period", "value"),
+        Input("ma2-vs-ma3-pyminor--include-linux", "value"),
+    ],
 )
 @maybe_cache_graph
-def update_ma2_vs_ma3_pyminor(value):
+def update_ma2_vs_ma3_pyminor(period, include_linux):
     app.logger.info("update_ma2_vs_ma3_pyminor callback")
     df = get_data()
     combined = df[df.category_label == "combined"]
-    if value and "include_linux" in value:
+    if include_linux:
         data = combined[~combined.category_value.str.endswith("no_linux")]
     else:
         data = combined[combined.category_value.str.endswith("no_linux")]
+
+    data = filter_by_period(data, period)
 
     ma2 = data[data.category_value.str.contains("marshmallow2")]
     ma2_versions = sorted(ma2.category_value.unique())

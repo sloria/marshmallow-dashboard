@@ -4,7 +4,7 @@ body {
   line-height: 1.4;
 
   max-width: 800px;
-  margin: 20px auto;
+  margin: 20px auto 100px;
   padding: 0 10px;
 
   color: #363636;
@@ -26,8 +26,13 @@ p {
   font-size: 1.2em;
 }
 
+.Select,
 label {
   font-size: 1.4em;
+}
+
+.Select {
+  margin-bottom: 1rem;
 }
 
 ._dash-loading {
