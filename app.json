@@ -1,6 +1,6 @@
 {
   "name": "marshmallow dashboard",
-  "repository": "https://github.com/sloria/dashboard",
+  "repository": "https://github.com/sloria/marshmallow-dashboard",
   "env": {
     "GOOGLE_PRIVATE_KEY": { "required": true },
     "GOOGLE_PRIVATE_KEY_ID": { "required": true },
