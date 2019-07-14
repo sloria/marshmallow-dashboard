@@ -308,8 +308,8 @@ def update_ma2_vs_ma3_by_week(percentages, include_linux):
         y_title = "downloads"
 
     data = [
-        go.Bar(x=ma2_x, y=ma2_y, name="ma2", marker=dict(color=MA_COLORS["2.x"])),
         go.Bar(x=ma3_x, y=ma3_y, name="ma3", marker=dict(color=MA_COLORS["3.x"])),
+        go.Bar(x=ma2_x, y=ma2_y, name="ma2", marker=dict(color=MA_COLORS["2.x"])),
     ]
     return go.Figure(
         data=data,
