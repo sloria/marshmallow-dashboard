@@ -80,7 +80,9 @@ def get_data():
     app.logger.info("fetching data")
     client = get_client()
     result = client.query(query)
-    return result.to_dataframe()
+    df = result.to_dataframe()
+    df["date"] = pd.to_datetime(df.date)
+    return df
 
 
 # -----------------------------------------------------------------------------
@@ -159,7 +161,7 @@ def layout():
             dcc.Markdown(
                 "Data are collected daily from PyPI's BigQuery dataset. "
                 "Excludes downloads from mirrors and Linux platforms "
-                "(to correct for CI downloads). Want the source code? It's [here](https://github.com/sloria/marshmallow-dashboard)."
+                "(to correct for CI downloads). Looking for the source code? It's [here](https://github.com/sloria/marshmallow-dashboard)."
             ),
             ma2_vs_ma3,
             ma2_vs_ma3_by_week,
@@ -200,7 +202,7 @@ def maybe_cache_graph(func):
 
 
 def filter_by_period(df, after):
-    after_date = dt.date.today() - dt.timedelta(days=after or 7)
+    after_date = dt.datetime.utcnow() - dt.timedelta(days=after or 7)
     return df[df.date >= after_date]
 
 
