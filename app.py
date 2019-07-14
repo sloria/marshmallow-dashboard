@@ -67,7 +67,7 @@ FROM `marshmallow-dashboard.results.downloads*`
 WHERE
    _TABLE_SUFFIX
     BETWEEN FORMAT_DATE(
-      '%Y%m%d', DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY))
+      '%Y%m%d', DATE_SUB(CURRENT_DATE(), INTERVAL 60 DAY))
     AND FORMAT_DATE('%Y%m%d', CURRENT_DATE())
 """
 
