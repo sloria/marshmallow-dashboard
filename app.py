@@ -260,8 +260,7 @@ def downloads_by_week(df, date_key="date", downloads_key="downloads"):
     df_copy = df.loc[:, [downloads_key]]
     df_copy["week"] = pd.to_datetime(df[date_key]) - pd.to_timedelta(7, unit="d")
     grouped = df_copy.groupby([pd.Grouper(key="week", freq="W-MON")])[downloads_key]
-    # exclude current week
-    return grouped.sum().reset_index().sort_values("week")[:-1]
+    return grouped.sum().reset_index().sort_values("week")
 
 
 @app.callback(
