@@ -8,6 +8,8 @@ import pandas as pd
 import plotly.graph_objs as go
 from dash.dependencies import Input
 from dash.dependencies import Output
+from flask import redirect
+from flask import request
 from flask_caching import Cache
 from google.auth.crypt._python_rsa import RSASigner
 from google.cloud import bigquery
@@ -44,6 +46,20 @@ cache = Cache(
         "CACHE_DEFAULT_TIMEOUT": CACHE_TIMEOUT,
     },
 )
+
+
+@server.before_request
+def force_https():
+    criteria = [
+        server.debug,
+        request.is_secure,
+        request.headers.get("X-Forwarded-Proto", "http") == "https",
+    ]
+    if not any(criteria):
+        if request.url.startswith("http://"):
+            url = request.url.replace("http://", "https://", 1)
+            return redirect(url, code=302)
+
 
 # -----------------------------------------------------------------------------
 
